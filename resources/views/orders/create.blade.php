@@ -25,7 +25,7 @@
         </div>
     </nav>
 
-    <div class="container" style="max-width:680px;">
+    <div class="container" style="max-width:800px;">
         <div class="page-header">
             <h1>Place New Order</h1>
             <p>Submit an order to a campus vendor.</p>
