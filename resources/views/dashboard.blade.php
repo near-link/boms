@@ -11,9 +11,7 @@
 <body class="vendor-theme">
     <nav class="navbar">
         <div class="navbar-brand">BOMS <span>vendor</span></div>
-        <ul class="navbar-links">
-            <li><a href="{{ route('dashboard') }}" class="active">Dashboard</a></li>
-        </ul>
+        <div class="navbar-title">Dashboard</div>
         <div class="navbar-user">
             <span class="navbar-role-tag">Vendor</span>
             <span>{{ Auth::user()->name }}</span>
@@ -109,16 +107,17 @@
             var html = '';
             for (var i = 0; i < filtered.length; i++) {
                 var o = filtered[i];
-                var actionHtml = '';
+                var actionHtml = '<div style="display:flex;gap:6px;align-items:center;min-width:156px;">';
                 if (o.status === 'pending') {
-                    actionHtml = '<button class="btn btn-sm btn-vendor" onclick="updateStatus(' + o.id + ', \'processing\')">Accept</button>' +
-                                 ' <button class="btn btn-sm btn-secondary" onclick="deleteOrder(' + o.id + ', \'' + o.code + '\')" style="color:var(--ctp-red);">Delete</button>';
+                    actionHtml += '<button class="btn btn-sm btn-vendor" style="min-width:72px;" onclick="updateStatus(' + o.id + ', \'processing\')">Accept</button>' +
+                                  '<button class="btn btn-sm btn-danger" style="min-width:72px;" onclick="deleteOrder(' + o.id + ', \'' + o.code + '\')">Delete</button>';
                 } else if (o.status === 'processing') {
-                    actionHtml = '<button class="btn btn-sm btn-vendor" onclick="updateStatus(' + o.id + ', \'completed\')">Complete</button>';
+                    actionHtml += '<button class="btn btn-sm btn-vendor" style="min-width:72px;" onclick="updateStatus(' + o.id + ', \'completed\')">Done</button>' +
+                                  '<button class="btn btn-sm btn-danger" style="min-width:72px;" onclick="deleteOrder(' + o.id + ', \'' + o.code + '\')">Delete</button>';
                 } else {
-                    actionHtml = '<span style="color:var(--ctp-overlay0);font-size:0.7rem;">Done</span>' +
-                                 ' <button class="btn btn-sm btn-secondary" onclick="deleteOrder(' + o.id + ', \'' + o.code + '\')" style="color:var(--ctp-red);font-size:0.65rem;">Delete</button>';
+                    actionHtml += '<button class="btn btn-sm btn-danger" style="min-width:72px;" onclick="deleteOrder(' + o.id + ', \'' + o.code + '\')">Delete</button>';
                 }
+                actionHtml += '</div>';
 
                 html += '<tr>' +
                     '<td><span class="order-id">' + o.code + '</span></td>' +
@@ -126,8 +125,8 @@
                     '<td style="color:var(--ctp-subtext0);font-size:0.75rem;">' + o.items + '</td>' +
                     '<td style="font-weight:600;">' + o.total + '</td>' +
                     '<td style="color:var(--ctp-overlay0);font-size:0.75rem;">' + o.time + '</td>' +
-                    '<td><span class="badge badge-' + o.status + '">' + o.status + '</span></td>' +
-                    '<td>' + actionHtml + '</td>' +
+                    '<td><span class="badge badge-' + o.status + '">' + o.status.charAt(0).toUpperCase() + o.status.slice(1) + '</span></td>' +
+                    '<td style="min-width:156px;">' + actionHtml + '</td>' +
                     '</tr>';
             }
             tbody.innerHTML = html;

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
 
 *,
 *::before,
@@ -51,7 +51,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'JetBrains Mono', monospace;
     background: var(--ctp-base);
     color: var(--ctp-text);
     line-height: 1.6;
@@ -98,6 +98,12 @@ a {
     font-weight: 500;
     color: var(--ctp-overlay1);
     transition: all 150ms ease;
+}
+
+.navbar-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ctp-subtext1);
 }
 
 .navbar-links a:hover {
@@ -234,6 +240,7 @@ a {
 .form-select:focus,
 .form-textarea:focus {
     border-color: var(--ctp-overlay0);
+    box-shadow: 0 0 0 2px rgba(108, 112, 134, 0.25);
 }
 
 .form-input::placeholder {
@@ -301,6 +308,22 @@ a {
     background: var(--ctp-surface1);
 }
 
+.btn:disabled,
+.btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-danger {
+    background: rgba(243, 139, 168, 0.15);
+    color: var(--ctp-red);
+}
+
+.btn-danger:hover {
+    background: rgba(243, 139, 168, 0.25);
+}
+
 .btn-sm {
     padding: 5px 12px;
     font-size: 0.7rem;
@@ -316,7 +339,8 @@ a {
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .badge-pending {
