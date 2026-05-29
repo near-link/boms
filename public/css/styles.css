@@ -106,12 +106,10 @@ a {
 }
 
 .navbar-role-tag {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 3px 8px;
-    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
 }
 
 .navbar-user {
@@ -315,12 +313,10 @@ a {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
-    border-radius: 3px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
 }
 
 .badge-pending {
@@ -355,18 +351,15 @@ a {
 }
 
 .stat-card .stat-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--ctp-overlay0);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ctp-overlay1);
     margin-bottom: 6px;
 }
 
 .stat-card .stat-value {
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -1px;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .stat-card .stat-sub {
