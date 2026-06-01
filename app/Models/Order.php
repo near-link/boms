@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class Order extends Model
 {
@@ -15,6 +16,7 @@ class Order extends Model
     protected $fillable = [
         'order_code',
         'customer_id',
+        'customer_name',
         'vendor_name',
         'delivery_location',
         'delivery_date',
@@ -24,6 +26,7 @@ class Order extends Model
         'delivery_fee',
         'total',
         'notes',
+        'vendor_note',
         'status',
     ];
 
@@ -46,6 +49,25 @@ class Order extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    /**
+     * Get the display name for the customer (handles walk-in orders).
+     */
+    public function getCustomerDisplayNameAttribute(): string
+    {
+        if ($this->customer) {
+            return $this->customer->name;
+        }
+        return $this->customer_name ?? 'Walk-in';
+    }
+
+    /**
+     * Scope to filter orders for a specific vendor.
+     */
+    public function scopeForVendor(Builder $query, string $vendorName): Builder
+    {
+        return $query->where('vendor_name', $vendorName);
     }
 
     /**

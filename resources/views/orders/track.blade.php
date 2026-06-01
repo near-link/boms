@@ -37,9 +37,7 @@
 
     @if (session('success'))
         <div style="max-width:600px;margin:0 auto;padding:0 20px;">
-            <div style="background:rgba(166,227,161,0.12);border:1px solid var(--ctp-green);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;color:var(--ctp-green);font-size:0.8rem;">
-                {{ session('success') }}
-            </div>
+            <div class="alert-success">{{ session('success') }}</div>
         </div>
     @endif
 
@@ -55,40 +53,51 @@
                     <span class="badge badge-{{ $order->status }}" id="resultBadge">{{ ucfirst($order->status) }}</span>
                 </div>
 
-                @php
-                    $statusSteps = ['pending' => 1, 'processing' => 3, 'completed' => 5];
-                    $currentStep = $statusSteps[$order->status] ?? 1;
-                    $progressPercent = match($order->status) {
-                        'pending' => '10%',
-                        'processing' => '40%',
-                        'completed' => '100%',
-                        default => '0%',
-                    };
-                @endphp
+                @if ($order->status === 'rejected')
+                    {{-- Rejected state --}}
+                    <div style="background:rgba(243,139,168,0.1);border:1px solid rgba(243,139,168,0.3);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;">
+                        <div style="font-weight:600;color:var(--ctp-red);margin-bottom:4px;">Order Rejected</div>
+                        <p style="font-size:0.8rem;color:var(--ctp-subtext0);">This order was declined by the vendor. Please contact them or place a new order.</p>
+                        @if ($order->vendor_note)
+                            <p style="font-size:0.8rem;color:var(--ctp-text);margin-top:8px;"><strong>Vendor note:</strong> {{ $order->vendor_note }}</p>
+                        @endif
+                    </div>
+                @else
+                    @php
+                        $statusSteps = ['pending' => 1, 'processing' => 3, 'completed' => 5];
+                        $currentStep = $statusSteps[$order->status] ?? 1;
+                        $progressPercent = match($order->status) {
+                            'pending' => '10%',
+                            'processing' => '40%',
+                            'completed' => '100%',
+                            default => '0%',
+                        };
+                    @endphp
 
-                <div class="progress-steps">
-                    <div class="progress-fill" style="width:{{ $progressPercent }};"></div>
-                    <div class="progress-step">
-                        <div class="step-circle {{ $currentStep >= 1 ? 'done' : '' }}">1</div>
-                        <span class="step-label {{ $currentStep >= 1 ? 'done' : '' }}">Placed</span>
+                    <div class="progress-steps">
+                        <div class="progress-fill" style="width:{{ $progressPercent }};"></div>
+                        <div class="progress-step">
+                            <div class="step-circle {{ $currentStep >= 1 ? 'done' : '' }}">1</div>
+                            <span class="step-label {{ $currentStep >= 1 ? 'done' : '' }}">Placed</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}">2</div>
+                            <span class="step-label {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}">Confirmed</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}">3</div>
+                            <span class="step-label {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}">Preparing</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}">4</div>
+                            <span class="step-label {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}">Ready</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle {{ $currentStep >= 5 ? 'done' : '' }}">5</div>
+                            <span class="step-label {{ $currentStep >= 5 ? 'done' : '' }}">Delivered</span>
+                        </div>
                     </div>
-                    <div class="progress-step">
-                        <div class="step-circle {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}">2</div>
-                        <span class="step-label {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}">Confirmed</span>
-                    </div>
-                    <div class="progress-step">
-                        <div class="step-circle {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}">3</div>
-                        <span class="step-label {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}">Preparing</span>
-                    </div>
-                    <div class="progress-step">
-                        <div class="step-circle {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}">4</div>
-                        <span class="step-label {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}">Ready</span>
-                    </div>
-                    <div class="progress-step">
-                        <div class="step-circle {{ $currentStep >= 5 ? 'done' : '' }}">5</div>
-                        <span class="step-label {{ $currentStep >= 5 ? 'done' : '' }}">Delivered</span>
-                    </div>
-                </div>
+                @endif
 
                 <div class="detail-grid">
                     <div class="detail-item">
@@ -109,6 +118,13 @@
                     </div>
                 </div>
 
+                @if ($order->vendor_note && $order->status !== 'rejected')
+                    <div style="background:rgba(203,166,247,0.1);border:1px solid rgba(203,166,247,0.2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;">
+                        <div style="font-size:0.7rem;font-weight:600;color:var(--ctp-mauve);margin-bottom:4px;">Note from Vendor</div>
+                        <p style="font-size:0.8rem;color:var(--ctp-text);">{{ $order->vendor_note }}</p>
+                    </div>
+                @endif
+
                 <div class="section-label">Timeline</div>
                 <div class="timeline">
                     <div class="timeline-item">
@@ -116,26 +132,35 @@
                         <div class="timeline-title">Order Placed</div>
                         <div class="timeline-time">{{ $order->created_at->format('g:i A') }} - Submitted by customer</div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}"></div>
-                        <div class="timeline-title" {!! $currentStep < 2 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Order Confirmed</div>
-                        <div class="timeline-time">{{ $currentStep >= 2 ? $order->updated_at->format('g:i A') . ' - Accepted by vendor' : 'Pending' }}</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}"></div>
-                        <div class="timeline-title" {!! $currentStep < 3 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Preparing</div>
-                        <div class="timeline-time">{{ $currentStep >= 3 ? $order->updated_at->format('g:i A') . ' - Vendor is preparing items' : 'Pending' }}</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}"></div>
-                        <div class="timeline-title" {!! $currentStep < 4 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Ready for Pickup</div>
-                        <div class="timeline-time">{{ $currentStep >= 4 ? 'Ready' : 'Pending' }}</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot {{ $currentStep >= 5 ? 'done' : '' }}"></div>
-                        <div class="timeline-title" {!! $currentStep < 5 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Delivered</div>
-                        <div class="timeline-time">{{ $currentStep >= 5 ? $order->updated_at->format('g:i A') . ' - Completed' : 'Pending' }}</div>
-                    </div>
+                    @if ($order->status === 'rejected')
+                        <div class="timeline-item">
+                            <div class="timeline-dot" style="border-color:var(--ctp-red);background:var(--ctp-red);"></div>
+                            <div class="timeline-title" style="color:var(--ctp-red);">Order Rejected</div>
+                            <div class="timeline-time">{{ $order->updated_at->format('g:i A') }} - Declined by vendor</div>
+                        </div>
+                    @else
+                        @php $currentStep = $statusSteps[$order->status] ?? 1; @endphp
+                        <div class="timeline-item">
+                            <div class="timeline-dot {{ $currentStep >= 2 ? 'done' : ($currentStep >= 1 ? 'active' : '') }}"></div>
+                            <div class="timeline-title" {!! $currentStep < 2 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Order Confirmed</div>
+                            <div class="timeline-time">{{ $currentStep >= 2 ? $order->updated_at->format('g:i A') . ' - Accepted by vendor' : 'Pending' }}</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot {{ $currentStep >= 4 ? 'done' : ($currentStep >= 3 ? 'active' : '') }}"></div>
+                            <div class="timeline-title" {!! $currentStep < 3 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Preparing</div>
+                            <div class="timeline-time">{{ $currentStep >= 3 ? $order->updated_at->format('g:i A') . ' - Vendor is preparing items' : 'Pending' }}</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot {{ $currentStep >= 5 ? 'done' : ($currentStep >= 4 ? 'active' : '') }}"></div>
+                            <div class="timeline-title" {!! $currentStep < 4 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Ready for Pickup</div>
+                            <div class="timeline-time">{{ $currentStep >= 4 ? 'Ready' : 'Pending' }}</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot {{ $currentStep >= 5 ? 'done' : '' }}"></div>
+                            <div class="timeline-title" {!! $currentStep < 5 ? 'style="color:var(--ctp-overlay0);"' : '' !!}>Delivered</div>
+                            <div class="timeline-time">{{ $currentStep >= 5 ? $order->updated_at->format('g:i A') . ' - Completed' : 'Pending' }}</div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

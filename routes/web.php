@@ -18,10 +18,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware('auth')->group(function () {
-    // Vendor dashboard (READ all orders)
+    // Vendor dashboard
     Route::get('/dashboard', [OrderController::class, 'index'])->name('dashboard');
 
-    // Order CRUD
+    // Vendor manual order
+    Route::get('/vendor/create', [OrderController::class, 'vendorCreate'])->name('vendor.orders.create');
+    Route::post('/vendor/orders', [OrderController::class, 'vendorStore'])->name('vendor.orders.store');
+
+    // Order detail JSON
+    Route::get('/orders/{order}/detail', [OrderController::class, 'show'])->name('orders.show');
+
+    // Customer order form
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
@@ -30,9 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/track', [OrderController::class, 'search'])->name('orders.search');
     Route::get('/track/{orderCode}', [OrderController::class, 'track'])->name('orders.track');
 
-    // Update status (UPDATE)
+    // Update status / vendor note
     Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 
-    // Delete order (DELETE)
+    // Delete order
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+    // Polling API
+    Route::get('/api/stats', [OrderController::class, 'stats'])->name('api.stats');
 });

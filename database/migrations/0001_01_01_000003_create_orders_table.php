@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_code')->unique();
-            $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('customer_name')->nullable(); // for walk-in / manual orders
             $table->string('vendor_name');
             $table->string('delivery_location');
             $table->date('delivery_date');
@@ -24,7 +25,8 @@ return new class extends Migration
             $table->decimal('delivery_fee', 8, 2)->default(2.00);
             $table->decimal('total', 8, 2);
             $table->text('notes')->nullable();
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->text('vendor_note')->nullable();
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }
