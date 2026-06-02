@@ -13,6 +13,7 @@
         <ul class="navbar-links">
             <li><a href="{{ route('orders.create') }}">New Order</a></li>
             <li><a href="{{ route('orders.track.form') }}" class="active">Track Order</a></li>
+            <li><a href="{{ route('profile.show') }}">Profile</a></li>
         </ul>
         <div class="navbar-user">
             <span class="navbar-role-tag">Customer</span>

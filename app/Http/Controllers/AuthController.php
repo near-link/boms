@@ -15,8 +15,8 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             return Auth::user()->isVendor()
-                ? redirect()->route('dashboard')
-                : redirect()->route('orders.create');
+                ? redirect()->route('vendor.dashboard')
+                : redirect()->route('shop.index');
         }
 
         return view('auth.login');
@@ -34,7 +34,7 @@ class AuthController extends Controller
 
         if (Auth::attempt(array_merge($credentials, ['role' => 'vendor']))) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard');
+            return redirect()->route('vendor.dashboard');
         }
 
         return back()->withErrors(['email' => 'Invalid vendor credentials.'])->withInput();
@@ -52,7 +52,7 @@ class AuthController extends Controller
 
         if (Auth::attempt(array_merge($credentials, ['role' => 'customer']))) {
             $request->session()->regenerate();
-            return redirect()->route('orders.create');
+            return redirect()->route('shop.index');
         }
 
         return back()->withErrors(['email' => 'Invalid customer credentials.'])->withInput();

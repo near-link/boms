@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'email', 'password', 'role', 'phone', 'address'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -53,5 +53,45 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    /**
+     * Get the products for the vendor.
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'vendor_id');
+    }
+
+    /**
+     * Get the cart items for the user.
+     */
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get the reviews by this user.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get the cart total.
+     */
+    public function getCartTotalAttribute(): float
+    {
+        return $this->cartItems()->with('product')->get()->sum(fn($item) => $item->qty * $item->product->price);
+    }
+
+    /**
+     * Get cart item count.
+     */
+    public function getCartCountAttribute(): int
+    {
+        return $this->cartItems()->sum('qty');
     }
 }

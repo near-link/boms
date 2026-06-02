@@ -13,6 +13,9 @@
         <div class="navbar-title">New Order</div>
         <div class="navbar-user">
             <a href="{{ route('dashboard') }}" class="btn btn-sm btn-secondary">Back to Dashboard</a>
+            <a href="{{ route('profile.show') }}" class="btn btn-sm btn-secondary" style="padding:5px 10px;font-size:0.65rem;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </a>
             <span class="navbar-role-tag">Vendor</span>
             <span>{{ Auth::user()->name }}</span>
             <div class="navbar-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) . strtoupper(substr(explode(' ', Auth::user()->name)[1] ?? '', 0, 1)) }}</div>
