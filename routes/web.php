@@ -50,6 +50,16 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->group(function () 
     Route::put('/settings', [ProfileController::class, 'update'])->name('vendor.settings.update');
     Route::put('/settings/password', [ProfileController::class, 'updatePassword'])->name('vendor.settings.password');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('vendor.settings.destroy');
+
+    // AI WhatsApp Order Parser
+    Route::post('/orders/ai-parse', [Vendor\AiParserController::class, 'parse'])->name('vendor.orders.ai-parse');
+
+    // Delivery Manifest
+    Route::get('/manifest', [Vendor\ManifestController::class, 'index'])->name('vendor.manifest');
+    Route::post('/manifest/complete', [Vendor\ManifestController::class, 'complete'])->name('vendor.manifest.complete');
+
+    // Prep List
+    Route::get('/prep-list', [Vendor\PrepListController::class, 'index'])->name('vendor.prep-list');
 });
 
 // ========== Customer Portal ==========
