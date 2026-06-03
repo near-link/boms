@@ -185,5 +185,165 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now()->subDays($o['days_ago'])->setTime(rand(7, 18), rand(0, 59)),
             ]);
         }
+
+        // ========== Historical Orders (6 months) for Reports + Prep List ==========
+        $customers = [$alif, $sarah, $johan, $nurul, $irfan, $iman, $adam, $lina];
+        $locations = ['Block A - Main Lobby', 'Block B - Cafeteria', 'Library Entrance', 'Dewan Kuliah Utama', 'Counter'];
+        $slots = ['Morning (8:00 - 10:00)', 'Lunch (12:00 - 14:00)', 'Evening (17:00 - 19:00)'];
+
+        $pakMatMenu = [
+            ['name' => 'Nasi Lemak Special', 'price' => 6.00],
+            ['name' => 'Nasi Ayam Penyet', 'price' => 8.00],
+            ['name' => 'Nasi Goreng Kampung', 'price' => 7.00],
+            ['name' => 'Nasi Campur', 'price' => 7.50],
+            ['name' => 'Mee Goreng Mamak', 'price' => 6.50],
+            ['name' => 'Laksa Penang', 'price' => 7.00],
+            ['name' => 'Roti Canai', 'price' => 2.00],
+            ['name' => 'Ayam Goreng Set', 'price' => 8.00],
+            ['name' => 'Teh Tarik', 'price' => 2.60],
+            ['name' => 'Kopi O', 'price' => 2.00],
+            ['name' => 'Milo Ais', 'price' => 3.50],
+        ];
+
+        $burgerMenu = [
+            ['name' => 'Burger Bakar Double', 'price' => 7.33],
+            ['name' => 'Chicken Burger Set', 'price' => 9.00],
+            ['name' => 'Fish Burger', 'price' => 8.50],
+            ['name' => 'BBQ Beef Burger', 'price' => 12.00],
+            ['name' => 'Fries Large', 'price' => 4.00],
+            ['name' => 'Onion Rings', 'price' => 4.50],
+            ['name' => 'Nuggets (6pc)', 'price' => 5.00],
+            ['name' => 'Iced Lemon Tea', 'price' => 3.00],
+            ['name' => 'Milkshake Chocolate', 'price' => 6.00],
+        ];
+
+        $orderCode = 2500;
+
+        // Generate 6 months of history (~26 weeks)
+        for ($week = 1; $week <= 26; $week++) {
+            for ($day = 0; $day < 7; $day++) {
+                $date = now()->subWeeks($week)->startOfWeek()->addDays($day);
+                // Skip weekends for realism (lower volume)
+                $isWeekend = $day >= 5;
+                // Growth factor: older weeks get fewer orders (simulates business growth)
+                $growthFactor = max(0.4, $week <= 4 ? 1.0 : 1.0 - (($week - 4) * 0.025));
+
+                // Pak Mat: 2-6 orders per day (scaled)
+                $baseOrders = $isWeekend ? rand(1, 3) : rand(3, 6);
+                $numOrders = max(1, (int) round($baseOrders * $growthFactor));
+                for ($i = 0; $i < $numOrders; $i++) {
+                    $cust = $customers[array_rand($customers)];
+                    $numItems = rand(1, 3);
+                    $items = [];
+                    $subtotal = 0;
+                    for ($j = 0; $j < $numItems; $j++) {
+                        $product = $pakMatMenu[array_rand($pakMatMenu)];
+                        $qty = rand(1, 3);
+                        $items[] = ['name' => $product['name'], 'qty' => $qty, 'price' => $product['price']];
+                        $subtotal += $product['price'] * $qty;
+                    }
+
+                    Order::create([
+                        'order_code' => 'BOM-' . $orderCode++,
+                        'customer_id' => $cust->id,
+                        'vendor_name' => 'Warung Pak Mat',
+                        'delivery_location' => $locations[array_rand($locations)],
+                        'delivery_date' => $date->toDateString(),
+                        'time_slot' => $slots[array_rand($slots)],
+                        'items' => $items,
+                        'subtotal' => round($subtotal, 2),
+                        'delivery_fee' => 2.00,
+                        'total' => round($subtotal + 2, 2),
+                        'status' => 'completed',
+                        'created_at' => $date->copy()->setTime(rand(7, 18), rand(0, 59)),
+                        'updated_at' => $date->copy()->setTime(rand(7, 18), rand(0, 59)),
+                    ]);
+                }
+
+                // Burger Station: 1-4 orders per day (scaled)
+                $baseOrders = $isWeekend ? rand(1, 2) : rand(2, 4);
+                $numOrders = max(1, (int) round($baseOrders * $growthFactor));
+                for ($i = 0; $i < $numOrders; $i++) {
+                    $cust = $customers[array_rand($customers)];
+                    $numItems = rand(1, 3);
+                    $items = [];
+                    $subtotal = 0;
+                    for ($j = 0; $j < $numItems; $j++) {
+                        $product = $burgerMenu[array_rand($burgerMenu)];
+                        $qty = rand(1, 2);
+                        $items[] = ['name' => $product['name'], 'qty' => $qty, 'price' => $product['price']];
+                        $subtotal += $product['price'] * $qty;
+                    }
+
+                    Order::create([
+                        'order_code' => 'BOM-' . $orderCode++,
+                        'customer_id' => $cust->id,
+                        'vendor_name' => 'Burger Station KL',
+                        'delivery_location' => $locations[array_rand($locations)],
+                        'delivery_date' => $date->toDateString(),
+                        'time_slot' => $slots[array_rand($slots)],
+                        'items' => $items,
+                        'subtotal' => round($subtotal, 2),
+                        'delivery_fee' => 2.00,
+                        'total' => round($subtotal + 2, 2),
+                        'status' => 'completed',
+                        'created_at' => $date->copy()->setTime(rand(7, 18), rand(0, 59)),
+                        'updated_at' => $date->copy()->setTime(rand(7, 18), rand(0, 59)),
+                    ]);
+                }
+            }
+        }
+
+        // ========== Extra processing orders for Delivery Manifest demo ==========
+        $manifestOrders = [
+            ['code' => 'BOM-9001', 'cust' => $nurul, 'vendor' => 'Warung Pak Mat', 'loc' => 'Block A - Main Lobby', 'slot' => 'Morning (8:00 - 10:00)',
+             'items' => [['name' => 'Nasi Lemak Special', 'qty' => 3, 'price' => 6.00], ['name' => 'Teh Tarik', 'qty' => 3, 'price' => 2.60]],
+             'sub' => 25.80, 'total' => 27.80, 'notes' => 'Extra sambal please'],
+            ['code' => 'BOM-9002', 'cust' => $irfan, 'vendor' => 'Warung Pak Mat', 'loc' => 'Block A - Main Lobby', 'slot' => 'Morning (8:00 - 10:00)',
+             'items' => [['name' => 'Roti Canai', 'qty' => 4, 'price' => 2.00]], 'sub' => 8.00, 'total' => 10.00, 'notes' => null],
+            ['code' => 'BOM-9003', 'cust' => $sarah, 'vendor' => 'Warung Pak Mat', 'loc' => 'Block B - Cafeteria', 'slot' => 'Morning (8:00 - 10:00)',
+             'items' => [['name' => 'Nasi Goreng Kampung', 'qty' => 1, 'price' => 7.00], ['name' => 'Kopi O', 'qty' => 1, 'price' => 2.00]],
+             'sub' => 9.00, 'total' => 11.00, 'notes' => null],
+            ['code' => 'BOM-9004', 'cust' => $adam, 'vendor' => 'Warung Pak Mat', 'loc' => 'Library Entrance', 'slot' => 'Lunch (12:00 - 14:00)',
+             'items' => [['name' => 'Nasi Ayam Penyet', 'qty' => 2, 'price' => 8.00]], 'sub' => 16.00, 'total' => 18.00, 'notes' => 'No spicy'],
+            ['code' => 'BOM-9005', 'cust' => $lina, 'vendor' => 'Warung Pak Mat', 'loc' => 'Library Entrance', 'slot' => 'Lunch (12:00 - 14:00)',
+             'items' => [['name' => 'Laksa Penang', 'qty' => 1, 'price' => 7.00], ['name' => 'Milo Ais', 'qty' => 1, 'price' => 3.50]],
+             'sub' => 10.50, 'total' => 12.50, 'notes' => null],
+            ['code' => 'BOM-9006', 'cust' => $alif, 'vendor' => 'Warung Pak Mat', 'loc' => 'Dewan Kuliah Utama', 'slot' => 'Lunch (12:00 - 14:00)',
+             'items' => [['name' => 'Ayam Goreng Set', 'qty' => 1, 'price' => 8.00]], 'sub' => 8.00, 'total' => 10.00, 'notes' => 'Meeting lunch'],
+            ['code' => 'BOM-9007', 'cust' => $johan, 'vendor' => 'Warung Pak Mat', 'loc' => 'Block A - Main Lobby', 'slot' => 'Evening (17:00 - 19:00)',
+             'items' => [['name' => 'Nasi Campur', 'qty' => 2, 'price' => 7.50], ['name' => 'Air Sirap Limau', 'qty' => 2, 'price' => 2.50]],
+             'sub' => 20.00, 'total' => 22.00, 'notes' => null],
+
+            // Burger Station processing orders
+            ['code' => 'BOM-9008', 'cust' => $iman, 'vendor' => 'Burger Station KL', 'loc' => 'Block B - Cafeteria', 'slot' => 'Evening (17:00 - 19:00)',
+             'items' => [['name' => 'Burger Bakar Double', 'qty' => 2, 'price' => 7.33], ['name' => 'Fries Large', 'qty' => 2, 'price' => 4.00]],
+             'sub' => 22.66, 'total' => 24.66, 'notes' => null],
+            ['code' => 'BOM-9009', 'cust' => $nurul, 'vendor' => 'Burger Station KL', 'loc' => 'Block A - Main Lobby', 'slot' => 'Evening (17:00 - 19:00)',
+             'items' => [['name' => 'Chicken Burger Set', 'qty' => 1, 'price' => 9.00], ['name' => 'Milkshake Chocolate', 'qty' => 1, 'price' => 6.00]],
+             'sub' => 15.00, 'total' => 17.00, 'notes' => 'Extra mayo'],
+            ['code' => 'BOM-9010', 'cust' => $adam, 'vendor' => 'Burger Station KL', 'loc' => 'Dewan Kuliah Utama', 'slot' => 'Lunch (12:00 - 14:00)',
+             'items' => [['name' => 'BBQ Beef Burger', 'qty' => 1, 'price' => 12.00], ['name' => 'Onion Rings', 'qty' => 1, 'price' => 4.50]],
+             'sub' => 16.50, 'total' => 18.50, 'notes' => null],
+        ];
+
+        foreach ($manifestOrders as $o) {
+            Order::create([
+                'order_code' => $o['code'],
+                'customer_id' => $o['cust']->id,
+                'vendor_name' => $o['vendor'],
+                'delivery_location' => $o['loc'],
+                'delivery_date' => now()->toDateString(),
+                'time_slot' => $o['slot'],
+                'items' => $o['items'],
+                'subtotal' => $o['sub'],
+                'delivery_fee' => 2.00,
+                'total' => $o['total'],
+                'notes' => $o['notes'],
+                'status' => 'processing',
+                'created_at' => now()->setTime(rand(7, 12), rand(0, 59)),
+                'updated_at' => now()->setTime(rand(7, 12), rand(0, 59)),
+            ]);
+        }
     }
 }

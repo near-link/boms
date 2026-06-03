@@ -32,7 +32,7 @@
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
     {{-- Monthly revenue chart --}}
-    <div class="card chart-card" style="min-height:200px;">
+    <div class="card chart-card" style="min-height:220px;">
         <div class="chart-title">Monthly Revenue (6 months)</div>
         <div class="chart-bars">
             @php $maxRev = max(array_column($monthlyRevenue, 'value')); if ($maxRev == 0) $maxRev = 1; @endphp

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class GeminiService
 {
     private string $apiKey;
-    private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
     public function __construct()
     {
@@ -126,7 +126,14 @@ PROMPT;
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-                return ['error' => 'Failed to connect to Gemini API. Please check your API key.'];
+
+                if ($response->status() === 429) {
+                    return ['error' => 'Gemini API rate limit reached. Please wait a minute and try again.'];
+                }
+                if ($response->status() === 401 || $response->status() === 403) {
+                    return ['error' => 'Invalid Gemini API key. Please check your GEMINI_API_KEY in .env.'];
+                }
+                return ['error' => 'Gemini API error (HTTP ' . $response->status() . '). Please try again.'];
             }
 
             $data = $response->json();
