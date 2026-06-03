@@ -281,6 +281,7 @@
                 }
                 var activeTab = document.querySelector('#statusTabs .tab.active').getAttribute('data-filter');
                 renderOrders(activeTab, document.getElementById('searchInput').value);
+                showToast('Order status updated.');
             }
         });
     }
@@ -301,6 +302,7 @@
                 orders = orders.filter(function(o) { return o.id !== orderId; });
                 var activeTab = document.querySelector('#statusTabs .tab.active').getAttribute('data-filter');
                 renderOrders(activeTab, document.getElementById('searchInput').value);
+                showToast('Order ' + orderCode + ' deleted.');
             }
         });
     }
